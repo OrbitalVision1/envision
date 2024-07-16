@@ -24,7 +24,7 @@ const Lightnew = (meshRef) => {
     iridescenceThicknessRange,
     specularIntensity,
     specularColor,
-    transmission,
+    // transmission,
 
     ambientIntensity,
     hemiIntensity,
