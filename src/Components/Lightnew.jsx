@@ -9,7 +9,7 @@ import { useControls, folder } from "leva";
 
 const Lightnew = () => {
   const {
-    ambientOn,
+
     ambientIntensity,
     hemiOn,
     hemiIntensity,

@@ -6,14 +6,13 @@ import {
   MeshPhysicalMaterial,
   DoubleSide,
   SRGBColorSpace,
+  Scene,
 } from "three";
 import { useControls } from "leva";
-import { blue } from "@mui/material/colors";
 
 const Sofa1 = () => {
   const terrainTextures = useTexture({
     map: "https://data.expivi.net/teams/4145/media/file_62d7fe05a293f/Arctic_COL_LOW.jpg",
-    // roughnessMap: "/Specchio bump map_LOW.jpg",
     metalnessMap:
       "https://data.expivi.net/teams/4145/media/file_623c3a07c457a/dr_4.jpg",
     envMap:
@@ -35,60 +34,15 @@ const Sofa1 = () => {
     }
   });
 
-  const {
-    anisotropy,
-    anisotropyMap,
-    anisotropyRotation,
-    attenuationColor,
-    sheen,
-    sheenRoughness,
-    sheenColor,
-    reflectivity,
-    envMapIntensity,
-    bumpScale,
-    displacementScale,
-    opacity,
-    ior,
-    roughness,
-    clearcoat,
-    metalness,
-    iridescence,
-    iridescenceIOR,
-    iridescenceThicknessRange,
-    specularIntensity,
-    specularColor,
-    // thickness,
-    transmission,
-    aoMapIntensity,
-    displacementBias,
-  } = useControls({
-    anisotropy: { value: 0, min: 1, max: 16 },
-    anisotropyMap: { value: 0, min: 1, max: 16 },
-    sheen: { value: 0, min: 0, max: 1 },
-    sheenRoughness: { value: 0, min: 0, max: 1 },
-    sheenColor: "#000000",
-    shaderMaterial: { value: 0, min: 0, max: 1 },
-    reflectivity: { value: 0.2, min: 0, max: 1 },
-    anisotropyRotation: { value: 0, min: 0, max: 1 },
-    attenuationColor: "#ffffff",
-    envMapIntensity: { value: 0.5, min: 0, max: 1 },
-    bumpScale: { value: 0.001, min: 0, max: 1 },
-    displacementScale: { value: 0, min: 0, max: 0.5 },
-    opacity: { value: 0, min: 0, max: 1 },
-    ior: { value: 0, min: 1, max: 2 },
-    roughness: { value: 0.9, min: 0, max: 1 },
-    metalness: { value: 0.32, min: 0, max: 1 },
-    clearcoat: { value: 0.0, min: 0, max: 1 },
-    iridescence: { value: 0.2, min: 0, max: 1 },
-    iridescenceIOR: { value: 0.2, min: 1, max: 2 },
-    iridescenceThicknessRange: { value: [100, 3000], min: 0, max: 1 },
-    specularIntensity: { value: 0.5, min: 0, max: 1 },
-    specularColor: "#ffffff",
-    // thickness: 0.1,
-    transmission: 0.001,
-    aoMapIntensity: 0.5,
-    displacementBias: 0,
-  });
+  const { anisotropy, sheen, reflectivity, bumpScale, roughness } = useControls(
+    {
+      anisotropy: { value: 0, min: 1, max: 16 },
+      sheen: { value: 0, min: 0, max: 1 },
+      reflectivity: { value: 0.2, min: 0, max: 1 },
+      bumpScale: { value: 0.001, min: 0, max: 1 },
+      roughness: { value: 0.9, min: 0, max: 1 },
+    }
+  );
 
   const customMaterial = new MeshPhysicalMaterial({
     map: terrainTextures.map,
@@ -108,7 +62,7 @@ const Sofa1 = () => {
   });
 
   const boxMaterial = new MeshPhysicalMaterial({
-    map: floortexture.map,
+    map: floortexture.maptest,
   });
 
   const fbx = useFBX("src/assets/WSAMPLE.fbx");
@@ -123,7 +77,7 @@ const Sofa1 = () => {
         }
         const hideelement = child.name.includes("Shadow_Rextangle003");
         if (hideelement) {
-          child.visible = true;
+          child.visible = false;
           child.material = boxMaterial;
         } else {
           child.visible = true;
