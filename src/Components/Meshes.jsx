@@ -18,14 +18,13 @@ const Meshes = () => {
     if (fbx) {
       fbx.traverse((child) => {
         if (child.isMesh) {
-          // Apply different colors based on mesh names
           let color = colors[child.name] || "#999898"; // Default color if not in state
 
-          // Apply MeshPhysicalMaterial with the assigned color
           child.material = new MeshPhysicalMaterial({
             color: color,
             side: DoubleSide,
           });
+
 
           child.castShadow = true;
           child.receiveShadow = true;
@@ -36,7 +35,6 @@ const Meshes = () => {
 
   useFrame(() => {
     if (meshRef.current) {
-      // meshRef.current.rotation.y += 0.01; // Rotate for visual confirmation
     }
   });
 
@@ -46,4 +44,4 @@ const Meshes = () => {
 };
 
 export default Meshes;
-//Revert me
+

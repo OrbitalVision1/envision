@@ -1,12 +1,16 @@
 import React, { useEffect } from "react";
-import { useFBX, useTexture } from "@react-three/drei";
+import { Shadow, useFBX, useTexture } from "@react-three/drei";
 import {
   Mesh,
   RepeatWrapping,
   MeshPhysicalMaterial,
   DoubleSide,
   SRGBColorSpace,
-  Scene,
+  ShadowMaterial,
+  MeshBasicMaterial,
+  NormalBlending,
+  FrontSide,
+  MeshPhongMaterial,
 } from "three";
 import { useControls } from "leva";
 
@@ -19,10 +23,6 @@ const Sofa1 = () => {
       "https://data.expivi.net/teams/4145/media/file_623c39c5612c7/barxat%20bump.jpg",
     bumpMap:
       "https://data.expivi.net/teams/4145/media/file_62d7fe16023a2/Arctic_NRM_LOW.jpg",
-  });
-
-  const floortexture = useTexture({
-    maptest: "/src/assets/Shadow Sutton Bench Stool (1).jpg",
   });
 
   Object.values(terrainTextures).forEach((texture) => {
@@ -61,8 +61,42 @@ const Sofa1 = () => {
     metalness: 0.32,
   });
 
-  const boxMaterial = new MeshPhysicalMaterial({
-    map: floortexture.maptest,
+  const floorTexture = useTexture(
+    "https://data.expivi.net/teams/4145/media/file_6661a610ac91b/Shadow%20Sutton%20Bench%20Stool.jpg"
+  );
+
+  const boxMaterial = new MeshBasicMaterial({
+    alphaMap: floorTexture,
+    opacity: 0.6,
+    blending: NormalBlending,
+    envMapIntensity: 1,
+    refractionRatio: 0.98,
+    reflectivity: 1,
+    bumpScale: 0,
+    displacementScale: 1,
+    displacementBias: 0,
+    norrmalScale: 1,
+    metalness: 0.8,
+    roughness: 0.98,
+    specularColor: "#111111",
+    blosiness: 0.4,
+    diffuseBias: 0.01,
+    difuseScale: 1,
+    difusePower: 1,
+    difuseeColor: "#000000",
+    reflectionBias: 0.01,
+    reflectionScale: 1,
+    reflectionPower: 1,
+    aoMapIntensity: 1,
+    lightMapIntensity: 1,
+    emissiveColor: "#000000",
+    emissiveIntensity: 1,
+    side: FrontSide,
+    flatShading: true,
+    difuseColor: "#e6e6e6",
+    transparent: true,
+    castShadow: true,
+    receiveShadow: true,
   });
 
   const fbx = useFBX("src/assets/WSAMPLE.fbx");
@@ -77,7 +111,7 @@ const Sofa1 = () => {
         }
         const hideelement = child.name.includes("Shadow_Rextangle003");
         if (hideelement) {
-          child.visible = false;
+          child.visible = true;
           child.material = boxMaterial;
         } else {
           child.visible = true;
@@ -86,7 +120,7 @@ const Sofa1 = () => {
       fbx.castShadow = true;
       fbx.receiveShadow = true;
     }
-  }, [fbx, customMaterial]);
+  }, [fbx, customMaterial, boxMaterial]);
 
   return <primitive object={fbx} />;
 };

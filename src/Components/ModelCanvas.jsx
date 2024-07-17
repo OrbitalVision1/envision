@@ -1,4 +1,9 @@
-import { OrbitControls, Environment } from "@react-three/drei";
+import {
+  OrbitControls,
+  Environment,
+  AccumulativeShadows,
+  RandomizedLight,
+} from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import * as THREE from "three";
 import { Leva } from "leva";
@@ -31,7 +36,7 @@ const ModelCanvas = () => {
             gl.outputEncoding = THREE.sRGBEncoding;
             gl.shadowMap.enabled = true;
             gl.shadowMap.type = THREE.PCFSoftShadowMap;
-            gl.setClearColor("#f0f0f0");
+            gl.setClearColor("#ffffff");
           }}
         >
           <ambientLight intensity={1} />
@@ -40,11 +45,8 @@ const ModelCanvas = () => {
             <Lightnew />
             <OrbitControls />
           </mesh>
-          <Environment
-            files="https://data.expivi.net/teams/4145/media/file_6661a610ac91b/Shadow%20Sutton%20Bench%20Stool.jpg"
-            blur={0.7}
-          />
-          <Floor />
+
+          {/* <Floor /> */}
         </Canvas>
       </div>
       <Leva collapsed />
