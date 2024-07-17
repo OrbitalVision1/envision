@@ -11,13 +11,17 @@ import {
   MeshPhysicalMaterial,
   DoubleSide,
   SRGBColorSpace,
+  MeshBasicMaterial,
+  NormalBlending,
+  FrontSide,
 } from "three";
+import * as THREE from "three";
 import { useControls } from "leva";
 
 const Model = () => {
   const meshRef = useRef();
 
-  const fbx = useLoader(FBXLoader, "/src/assets/WSAMPLE.fbx"); // Path to your FBX model
+  const fbx = useLoader(FBXLoader, "/src/assets/WSAMPLE.fbx");
 
   // Load textures
   const colorMap = useLoader(TextureLoader, "/src/assets/Arctic_COL_LOW.jpg");
@@ -27,19 +31,31 @@ const Model = () => {
     "/src/assets/barxat bump.jpg"
   );
   const metalnessMap = useLoader(TextureLoader, "/src/assets/dr_4.jpg");
+  const woodMap = useLoader(
+    TextureLoader,
+    "/src/assets/Antique Oak Diffuse 2.jpg"
+  );
+  const studMap = useLoader(
+    TextureLoader,
+    "/src/assets/Antique Oak Diffuse 2.jpg"
+  );
 
-  // Set color space (SRGBEncoding)
-  [colorMap, normalMap, environmentMap, metalnessMap].forEach((texture) => {
-    texture.colorSpace = SRGBColorSpace;
-  });
+  const floorTexture = useLoader(
+    TextureLoader,
+    "/src/assets/Shadow Sutton Bench Stool (1).jpg"
+  );
 
-  // Set wrapping and repeat
-  [colorMap, normalMap, environmentMap, metalnessMap].forEach((texture) => {
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-    texture.repeat.set(4, 4); // Adjust repeat to better fit your model
-  });
+  // Set color space (SRGBEncoding) and wrapping for all textures
+  [colorMap, normalMap, environmentMap, metalnessMap, studMap].forEach(
+    (texture) => {
+      texture.colorSpace = SRGBColorSpace;
+      texture.wrapS = RepeatWrapping;
+      texture.wrapT = RepeatWrapping;
+      texture.repeat.set(4, 4);
+    }
+  );
 
+  // Leva controls for material properties and shadow toggle
   const {
     anisotropy,
     anisotropyMap,
@@ -83,7 +99,6 @@ const Model = () => {
     ior: { value: 0, min: 1, max: 2 },
     roughness: { value: 0.9, min: 0, max: 1 },
     metalness: { value: 0.32, min: 0, max: 1 },
-
     clearcoat: { value: 0.0, min: 0, max: 1 },
     iridescence: { value: 0.2, min: 0, max: 1 },
     iridescenceIOR: { value: 0.2, min: 1, max: 2 },
@@ -102,7 +117,8 @@ const Model = () => {
       fbx.traverse((child) => {
         if (child.isMesh) {
           console.log(child.name);
-          child.material = new MeshPhysicalMaterial({
+          // Apply MeshPhysicalMaterial
+          let materialProps = {
             map: colorMap,
             metalnessMap: metalnessMap,
             normalMap: normalMap,
@@ -117,16 +133,65 @@ const Model = () => {
             side: DoubleSide,
             roughness: roughness,
             metalness: 0.32,
-          });
+          };
 
-          child.castShadow = castShadows;
-          child.receiveShadow = castShadows;
+          // Apply material to Wood mesh
+          if (child.name === "Westbury_Compact_Sofa_Wood") {
+            materialProps.map = woodMap;
+          }
 
+          // Apply material to Stud mesh
+          if (child.name === "Westbury_Compact_Sofa_Stud") {
+            materialProps = {
+              color: "#25231e",
+              opacity: 1,
+              transparent: true,
+              blending: NormalBlending,
+              envMap: environmentMap,
+              envMapIntensity: 1,
+              refractionRatio: 0.98,
+              reflectivity: 1,
+              bumpScale: 0,
+              displacementScale: 1,
+              displacementBias: 0,
+              normalScale: 1,
+              metalness: 0.5,
+              roughness: 0.4,
+              specularColor: "#64532e",
+              glossiness: 0.55,
+              clearcoat: 0,
+              coatRoughness: 0,
+              diffuseBias: 0.01,
+              diffuseScale: 1,
+              diffusePower: 1,
+              diffuseColor: "#000000",
+              reflectionBias: 0.01,
+              reflectionScale: 1,
+              reflectionPower: 1,
+              aoMapIntensity: 1,
+              emissive: "#000000",
+              emissiveIntensity: 1,
+              fog: true,
+              lights: true,
+              shading: THREE.SmoothShading,
+              side: DoubleSide,
+            };
+          }
+
+          // Apply floor texture to Shadow_Rextangle003
           if (child.name === "Shadow_Rextangle003") {
-            child.visible = false;
-          } else {
-            child.visible = true;
+            child.material = new MeshBasicMaterial({
+              alphaMap: floorTexture,
+              transparent: true,
+              opacity: 1.5,
+              blending: NormalBlending,
+              side: FrontSide,
+            });
             child.receiveShadow = true;
+          } else {
+            child.material = new MeshPhysicalMaterial(materialProps);
+            child.castShadow = castShadows;
+            child.receiveShadow = castShadows;
           }
         }
       });
@@ -137,12 +202,14 @@ const Model = () => {
     normalMap,
     environmentMap,
     metalnessMap,
+    woodMap,
     sheen,
     reflectivity,
     bumpScale,
     roughness,
     metalness,
     castShadows,
+    floorTexture,
   ]);
 
   useFrame(() => {
@@ -153,7 +220,7 @@ const Model = () => {
 
   return (
     <>
-      <primitive ref={meshRef} object={fbx} dispose={null} />
+      <primitive ref={meshRef} object={fbx} />
     </>
   );
 };

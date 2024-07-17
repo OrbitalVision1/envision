@@ -10,6 +10,7 @@ import { Leva } from "leva";
 import Lightnew from "./Lightnew";
 import Sofa1 from "./Lights2";
 import Floor from "./Floor";
+import Model from "./Model";
 
 const ModelCanvas = () => {
   return (
@@ -41,10 +42,12 @@ const ModelCanvas = () => {
         >
           <ambientLight intensity={1} />
           <mesh castShadow>
-            <Sofa1 />
+            {/* <Sofa1 /> */}
+            <Model />
             <Lightnew />
             <OrbitControls />
           </mesh>
+          <gridHelper args={[100, 100]} />
 
           {/* <Floor /> */}
         </Canvas>

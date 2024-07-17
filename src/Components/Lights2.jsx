@@ -1,12 +1,11 @@
 import React, { useEffect } from "react";
-import { Shadow, useFBX, useTexture } from "@react-three/drei";
+import { useFBX, useTexture } from "@react-three/drei";
 import {
   Mesh,
   RepeatWrapping,
   MeshPhysicalMaterial,
   DoubleSide,
   SRGBColorSpace,
-  ShadowMaterial,
   MeshBasicMaterial,
   NormalBlending,
   FrontSide,
@@ -51,14 +50,13 @@ const Sofa1 = () => {
     envMap: terrainTextures.envMap,
     bumpMap: terrainTextures.bumpMap,
     color: "#999898",
-    shadowSide: DoubleSide,
-    clipShadows: true,
-    sheen: sheen,
-    reflectivity: reflectivity,
-    bumpScale: bumpScale,
-    side: DoubleSide,
-    roughness: roughness,
+    sheen,
+    reflectivity,
+    bumpScale,
+    roughness,
     metalness: 0.32,
+    side: DoubleSide,
+    clipShadows: true,
   });
 
   const floorTexture = useTexture(
@@ -72,31 +70,40 @@ const Sofa1 = () => {
     envMapIntensity: 1,
     refractionRatio: 0.98,
     reflectivity: 1,
-    bumpScale: 0,
-    displacementScale: 1,
-    displacementBias: 0,
-    norrmalScale: 1,
-    metalness: 0.8,
     roughness: 0.98,
-    specularColor: "#111111",
-    blosiness: 0.4,
-    diffuseBias: 0.01,
-    difuseScale: 1,
-    difusePower: 1,
-    difuseeColor: "#000000",
-    reflectionBias: 0.01,
-    reflectionScale: 1,
-    reflectionPower: 1,
-    aoMapIntensity: 1,
-    lightMapIntensity: 1,
-    emissiveColor: "#000000",
-    emissiveIntensity: 1,
+    metalness: 0.8,
+    color: "#e6e6e6",
+    transparent: true,
     side: FrontSide,
     flatShading: true,
-    difuseColor: "#e6e6e6",
+    colorSpace: SRGBColorSpace,
+  });
+
+  const studMaterial = new MeshPhysicalMaterial({
+    color: "#25231e",
+    opacity: 1,
     transparent: true,
-    castShadow: true,
-    receiveShadow: true,
+    blending: NormalBlending,
+    envMapIntensity: 1,
+    refractionRatio: 0.98,
+    reflectivity: 1,
+    roughness: 0.4,
+    metalness: 0.5,
+    specularColor: "#64532e",
+    glossiness: 0.55,
+    side: DoubleSide,
+    colorSpace: SRGBColorSpace,
+  });
+
+  const woodleg = useTexture("src/assets/Antique Oak Diffuse 2.jpg");
+
+  const woodMap = new MeshPhysicalMaterial({
+    map: woodleg,
+    wrapS: RepeatWrapping,
+    wrapT: RepeatWrapping,
+    colorSpace: SRGBColorSpace,
+    side: DoubleSide,
+    repeat: [1, 1],
   });
 
   const fbx = useFBX("src/assets/WSAMPLE.fbx");
@@ -105,22 +112,24 @@ const Sofa1 = () => {
     if (fbx) {
       fbx.traverse((child) => {
         if (child instanceof Mesh) {
-          child.material = customMaterial;
           child.castShadow = true;
           child.receiveShadow = true;
-        }
-        const hideelement = child.name.includes("Shadow_Rextangle003");
-        if (hideelement) {
-          child.visible = true;
-          child.material = boxMaterial;
-        } else {
-          child.visible = true;
+
+          if (child.name.includes("Shadow_Rextangle003")) {
+            child.material = boxMaterial;
+          } else if (child.name.includes("Westbury_Compact_Sofa_Stud")) {
+            child.material = studMaterial;
+          } else if (child.name.includes("Westbury_Compact_Sofa_Wood")) {
+            child.material = woodMap;
+          } else {
+            child.material = customMaterial;
+          }
         }
       });
       fbx.castShadow = true;
       fbx.receiveShadow = true;
     }
-  }, [fbx, customMaterial, boxMaterial]);
+  }, [fbx, customMaterial, boxMaterial, woodMap, studMaterial]);
 
   return <primitive object={fbx} />;
 };
