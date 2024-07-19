@@ -15,7 +15,6 @@ import {
   NormalBlending,
   FrontSide,
 } from "three";
-import * as THREE from "three";
 import { useControls } from "leva";
 
 const Model = () => {
@@ -111,13 +110,10 @@ const Model = () => {
     castShadows: { value: true },
   });
 
-  // Apply textures to the model materials
   useEffect(() => {
     if (fbx) {
       fbx.traverse((child) => {
         if (child.isMesh) {
-          console.log(child.name);
-          // Apply MeshPhysicalMaterial
           let materialProps = {
             map: colorMap,
             metalnessMap: metalnessMap,
@@ -132,7 +128,7 @@ const Model = () => {
             bumpScale: bumpScale,
             side: DoubleSide,
             roughness: roughness,
-            metalness: 0.32,
+            metalness: metalness,
           };
 
           // Apply material to Wood mesh
@@ -156,7 +152,7 @@ const Model = () => {
               displacementBias: 0,
               normalScale: 1,
               metalness: 0.5,
-              roughness: 0.4,
+              roughness: 0.9,
               specularColor: "#64532e",
               glossiness: 0.55,
               clearcoat: 0,
@@ -173,7 +169,7 @@ const Model = () => {
               emissiveIntensity: 1,
               fog: true,
               lights: true,
-              shading: THREE.SmoothShading,
+              // shading: THREE.SmoothShading,
               side: DoubleSide,
             };
           }
@@ -214,7 +210,17 @@ const Model = () => {
 
   useFrame(() => {
     if (meshRef.current) {
-      // meshRef.current.rotation.y += 0.01; // Rotate for visual confirmation
+      // Update material properties in real-time
+      meshRef.current.traverse((child) => {
+        if (child.isMesh && child.material.isMeshPhysicalMaterial) {
+          child.material.sheen = sheen;
+          child.material.reflectivity = reflectivity;
+          child.material.bumpScale = bumpScale;
+          child.material.roughness = roughness;
+          child.material.metalness = metalness;
+          child.material.needsUpdate = true;
+        }
+      });
     }
   });
 

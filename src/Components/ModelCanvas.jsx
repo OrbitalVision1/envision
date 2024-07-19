@@ -28,7 +28,6 @@ const ModelCanvas = () => {
 
       <div style={{ flex: 1 }}>
         <Canvas
-          frameloop="demand"
           style={{ width: 800, height: 600 }}
           dpr={[1, 2]}
           shadows
@@ -42,14 +41,11 @@ const ModelCanvas = () => {
         >
           <ambientLight intensity={1} />
           <mesh castShadow>
-            {/* <Sofa1 /> */}
             <Model />
             <Lightnew />
             <OrbitControls />
           </mesh>
           <gridHelper args={[100, 100]} />
-
-          {/* <Floor /> */}
         </Canvas>
       </div>
       <Leva collapsed />
